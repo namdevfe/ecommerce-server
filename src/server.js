@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const dbConnect = require('./config/dbConnect')
+const initRoutes = require('./routes')
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 dbConnect()
 
 // Define routes
+initRoutes(app)
 app.use('/', (req, res) => res.send('SERVER ON'))
 
 // Run server
