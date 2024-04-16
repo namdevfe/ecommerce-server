@@ -1,10 +1,10 @@
-require('dotenv').config()
-const express = require('express')
-const dbConnect = require('./config/dbConnect')
-const initRoutes = require('./routes')
+// import 'dotenv/config'
+import express from 'express'
+import dbConnect from '~/config/dbConnect'
+import initRoutes from '~/routes/v1'
+import { env } from '~/config/environment'
 
 const app = express()
-const port = process.env.PORT || 8080
 
 // Middlewares
 app.use(express.json())
@@ -18,4 +18,7 @@ initRoutes(app)
 app.use('/', (req, res) => res.send('SERVER ON'))
 
 // Run server
-app.listen(port, () => console.log(`Server listening on port ${port}`))
+app.listen(env.APP_PORT, env.APP_HOST, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Server listening on http://${env.APP_HOST}:${env.APP_PORT}`)
+})

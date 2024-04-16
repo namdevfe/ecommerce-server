@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+import mongoose from 'mongoose'
+import bcrypt from 'bcrypt'
 
 const userSchema = mongoose.Schema({
   firstName: {
@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    require: true,
+    require: true
   },
   role: {
     type: String,
@@ -39,7 +39,7 @@ const userSchema = mongoose.Schema({
     default: false
   },
   refreshToken: {
-    type: String,
+    type: String
   },
   passwordChangeAt: {
     type: String
@@ -48,16 +48,17 @@ const userSchema = mongoose.Schema({
     type: String
   },
   passwordResetExpires: {
-    type: String,
+    type: String
   }
 }, {
   timestamps: true
 })
 
+// eslint-disable-next-line no-unused-vars
 userSchema.pre('save', async function(next) {
   const saltRounds = 10
   const salt = bcrypt.genSaltSync(saltRounds)
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-module.exports = mongoose.model('User', userSchema)
+export default mongoose.model('User', userSchema)

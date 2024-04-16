@@ -1,5 +1,5 @@
-const asyncHandler = require('express-async-handler')
-const User = require('../models/user')
+import asyncHandler from 'express-async-handler'
+import User from '~/models/user'
 
 const register = asyncHandler(async (req, res) => {
   // Get value register of user from client
@@ -21,6 +21,4 @@ const register = asyncHandler(async (req, res) => {
   })
 })
 
-module.exports = {
-  register
-}
+export { register }
