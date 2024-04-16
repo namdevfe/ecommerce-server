@@ -3,12 +3,14 @@ import express from 'express'
 import dbConnect from '~/config/dbConnect'
 import initRoutes from '~/routes/v1'
 import { env } from '~/config/environment'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 
 // Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 // Connect to database
 dbConnect()

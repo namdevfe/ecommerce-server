@@ -54,8 +54,8 @@ const userSchema = mongoose.Schema({
   timestamps: true
 })
 
-// eslint-disable-next-line no-unused-vars
 userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) next()
   const saltRounds = 10
   const salt = bcrypt.genSaltSync(saltRounds)
   this.password = await bcrypt.hash(this.password, salt)
