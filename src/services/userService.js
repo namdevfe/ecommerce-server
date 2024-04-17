@@ -1,6 +1,7 @@
 /* eslint-disable no-async-promise-executor */
 import { generateAccessToken, generateRefreshToken } from '~/middlewares/jwtMiddleware'
 import User from '~/models/user'
+import crypto from 'crypto'
 
 // Register
 const register = ({ email, password, phoneNumber, firstName, lastName }) => new Promise(async (resolve, reject) => {
@@ -97,12 +98,60 @@ const logout = (refreshToken) => new Promise(async (resolve, reject) => {
   }
 })
 
+// Check email already exist
+const isEmailExist = (email) => new Promise(async (resolve, reject) => {
+  try {
+    const response = await User.findOne({ email })
+    resolve(!!response ? true : false)
+  } catch (error) {
+    reject(error)
+  }
+})
+
+// Create reset token
+const createResetToken = (email) => new Promise(async (resolve, reject) => {
+  try {
+    const user = await User.findOne({ email })
+    if (!user) throw new Error('User not found')
+    const resetToken = user.createPasswordResetToken()
+    await user.save()
+    resolve({ resetToken })
+  } catch (error) {
+    reject(error)
+  }
+})
+
+// Compare reset token in db
+const resetPassword = ({ password, token }) => new Promise(async (resolve, reject) => {
+  try {
+    const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
+    const user = await User.findOne({ passwordResetToken, passwordResetExpires: { $gt: Date.now() } })
+    if (!user) throw new Error('Reset token invalid')
+
+    // Change password
+    user.passwordResetToken = undefined
+    user.passwordResetExpires = undefined
+    user.password = password
+    user.passwordChangedAt = Date.now()
+    await user.save()
+    resolve({
+      success: !!user ? true : false,
+      message: !!user ? 'Password is changed successfully' : 'Password is change failed'
+    })
+  } catch (error) {
+    reject(error)
+  }
+})
+
 const userService = {
   register,
   login,
   getUserProfile,
   checkRefreshToken,
-  logout
+  logout,
+  isEmailExist,
+  createResetToken,
+  resetPassword
 }
 
 export default userService
