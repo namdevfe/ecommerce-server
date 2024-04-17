@@ -3,6 +3,7 @@ import userService from '~/services/userService'
 import jwt from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { generateAccessToken } from '~/middlewares/jwtMiddleware'
+import sendMail from '~/utils/sendMail'
 
 const register = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber } = req.body
@@ -75,4 +76,49 @@ const logout = asyncHandler(async (req, res) => {
   return res.status(200).json(response)
 })
 
-export { register, login, getProfile, refreshToken, logout }
+const forgotPassword = asyncHandler(async (req, res) => {
+  // Check email has exist
+  const { email } = req.query
+
+  if (!email) throw new Error('Email is required')
+
+  // If email is already exist in database then create reset token
+  const { resetToken } = await userService.createResetToken(email)
+
+  // Send email to client
+  const html = `Please click on the button below to change password, link will expire in 15 minutes. 
+  <a href=${env.BASE_URL}/api/user/reset-password/${resetToken}>Click here</a>`
+
+  const data = {
+    email,
+    html
+  }
+
+  const response = await sendMail(data)
+
+  return res.status(200).json({
+    success: true,
+    data: response
+  })
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password, token } = req.body
+  if (!password || !token) throw new Error('Missing inputs')
+  const response = await userService.resetPassword(req.body)
+  if (response.success) {
+    return res.status(200).json(response)
+  } else {
+    return res.status(400).json(response)
+  }
+})
+
+export {
+  register,
+  login,
+  getProfile,
+  refreshToken,
+  logout,
+  forgotPassword,
+  resetPassword
+}
