@@ -97,7 +97,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const response = await sendMail(data)
 
   return res.status(200).json({
-    success: true,
+    success: response ? true : false,
     data: response
   })
 })
@@ -113,6 +113,11 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 })
 
+const getUsers = asyncHandler(async (req, res) => {
+  const data = await userService.getAllUsers()
+  return res.status(data?.length > 0 ? 200 : 400).json(data)
+})
+
 export {
   register,
   login,
@@ -120,5 +125,6 @@ export {
   refreshToken,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getUsers
 }

@@ -2,6 +2,7 @@
 import { generateAccessToken, generateRefreshToken } from '~/middlewares/jwtMiddleware'
 import User from '~/models/user'
 import crypto from 'crypto'
+import asyncHandler from 'express-async-handler'
 
 // Register
 const register = ({ email, password, phoneNumber, firstName, lastName }) => new Promise(async (resolve, reject) => {
@@ -143,6 +144,16 @@ const resetPassword = ({ password, token }) => new Promise(async (resolve, rejec
   }
 })
 
+// Get all user
+const getAllUsers = asyncHandler(async () => {
+  const users = await User.find().select('-refreshToken -password')
+  return {
+    success: users ? true : false,
+    message: users ? 'Success' : 'Failed',
+    data:  users
+  }
+})
+
 const userService = {
   register,
   login,
@@ -151,7 +162,8 @@ const userService = {
   logout,
   isEmailExist,
   createResetToken,
-  resetPassword
+  resetPassword,
+  getAllUsers
 }
 
 export default userService
