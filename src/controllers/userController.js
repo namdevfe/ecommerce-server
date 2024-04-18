@@ -118,6 +118,38 @@ const getUsers = asyncHandler(async (req, res) => {
   return res.status(data?.length > 0 ? 200 : 400).json(data)
 })
 
+const deleteUserByAdmin = asyncHandler(async (req, res) => {
+  const { _id } = req.query
+  if (!_id) throw new Error('Require user id')
+  const response = await userService.deleteUser(_id)
+  return res.status(response ? 200 : 400).json({
+    success: response ? true : false,
+    message: response ? `Deleted user with id=${_id} successfully` : 'Delete failed'
+  })
+})
+
+const updateProfile = asyncHandler(async (req, res) => {
+  const { _id } = req.user
+  if (!_id || Object.keys(req.body).length === 0) throw new Error('Missing inputs')
+  const response = await userService.updateUser(_id, req.body)
+  return res.status(response ? 200 : 400).json({
+    success: response ? true : false,
+    message: response ? `Updated user with id=${_id} successfully` : 'Update failed',
+    data: response
+  })
+})
+
+const updateUserByAdmin = asyncHandler(async (req, res) => {
+  const uid = req.params?.uid
+  if (!uid || Object.keys(req.body).length === 0) throw new Error('Missing inputs')
+  const response = await userService.updateUser(uid, req.body)
+  return res.status(response ? 200 : 400).json({
+    success: response ? true : false,
+    message: response ? `Updated user with id=${uid} successfully` : 'Update failed',
+    data: response
+  })
+})
+
 export {
   register,
   login,
@@ -126,5 +158,8 @@ export {
   logout,
   forgotPassword,
   resetPassword,
-  getUsers
+  getUsers,
+  deleteUserByAdmin,
+  updateProfile,
+  updateUserByAdmin
 }

@@ -154,6 +154,16 @@ const getAllUsers = asyncHandler(async () => {
   }
 })
 
+const deleteUser = asyncHandler(async (_id) => {
+  const response = await User.findByIdAndDelete(_id)
+  return response
+})
+
+const updateUser = asyncHandler(async (_id, data) => {
+  const response = await User.findByIdAndUpdate(_id, data, { new: true })
+  return response
+})
+
 const userService = {
   register,
   login,
@@ -163,7 +173,9 @@ const userService = {
   isEmailExist,
   createResetToken,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  deleteUser,
+  updateUser
 }
 
 export default userService
