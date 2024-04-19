@@ -19,9 +19,67 @@ const updateProduct = asyncHandler(async(id, product) => {
   return response
 })
 
-const getProducts = asyncHandler(async() => {
-  const response = await Product.find()
-  return response
+const getProducts = asyncHandler(async(query) => {
+  // Build query
+  const queryObj = { ...query }
+  const excludedFields = ['page', 'sort', 'limit', 'fields']
+  excludedFields.forEach(key => delete queryObj[key])
+
+  // Format operators correct in MongoDB
+  let queryString = JSON.stringify(queryObj)
+  queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
+  let formatedQueries = JSON.parse(queryString)
+
+  // Filtering
+  if (queryObj?.title) {
+    formatedQueries.title = {
+      $regex: queryObj.title,
+      $options: 'i'
+    }
+  }
+
+  let queryCommand = Product.find(formatedQueries)
+
+  // Sorting
+  if (query.sort) {
+    const sortBy = query.sort.split(',').join(' ')
+    queryCommand = queryCommand.sort(sortBy)
+  }
+
+  // Get fields expected
+  if (query.fields) {
+    const fields = query.fields.split(',').join(' ')
+    queryCommand = queryCommand.select(fields)
+  }
+
+  // Pagination
+  const LIMIT_PRODUCTS = 2
+  const limit = Number(query.limit) || LIMIT_PRODUCTS
+  const page = Number(query.page) || 1
+  const skip = (page - 1) * limit
+  queryCommand.skip(skip).limit(limit)
+
+  // queryCommand
+  //   .then(async(response) => {
+  //     const count = await Product.find(formatedQueries).countDocuments()
+  //     data = response
+  //   })
+  //   .catch(error => {
+  //     throw new Error(error)
+  //   })
+
+  try {
+    const response = await queryCommand.exec()
+    const count = await Product.find(formatedQueries).countDocuments()
+    return {
+      success: response ? true : false,
+      message: response ? 'Success' : 'Failed',
+      count,
+      products: response
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
 })
 
 const getProductById = asyncHandler(async(id) => {
