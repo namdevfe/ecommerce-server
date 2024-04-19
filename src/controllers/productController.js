@@ -50,7 +50,7 @@ const getProducts = asyncHandler(async(req, res) => {
   // Format operators correct in MongoDB
   let queryString = JSON.stringify(queryObj)
   queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
-  const formatedQueries = JSON.parse(queryString)
+  let formatedQueries = JSON.parse(queryString)
 
   // Filtering
   if (queryObj?.title) {
@@ -60,19 +60,13 @@ const getProducts = asyncHandler(async(req, res) => {
     }
   }
 
-  const queryCommand = Product.find(formatedQueries)
+  let queryCommand = Product.find(formatedQueries)
 
-  // Execute query
-  // queryCommand.exec(async(error, response) => {
-  //   if (error) throw new Error(error.message)
-  //   const count = await Product.find(formatedQueries).countDocuments()
-  //   return res.status(200).json({
-  //     success: response ? true : false,
-  //     message: response ? 'Success' : 'Failed',
-  //     products: response,
-  //     count
-  //   })
-  // })
+  // Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ')
+    queryCommand = queryCommand.sort(sortBy)
+  }
 
   queryCommand
     .then(async(response) => {
