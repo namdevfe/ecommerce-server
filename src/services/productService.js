@@ -115,7 +115,23 @@ const ratings = asyncHandler(async({ _id, star, comment, pid }) => {
     }, { new: true })
   }
 
-  return true
+  // Find updated product
+  const updatedProduct = await Product.findById(pid)
+  // Calculate sum star on ratings
+  const sumStar = updatedProduct.ratings?.reduce((sum, item) => sum + Number(item.star), 0)
+  const ratingCount = updatedProduct.ratings?.length
+  // Calculate average total ratings
+  const totalRatings = Math.round((sumStar * 10) / ratingCount) / 10
+
+  // Assign result to updated product
+  updatedProduct.totalRatings = totalRatings
+  await updatedProduct.save()
+
+  return {
+    success: updatedProduct ? true : false,
+    message: updatedProduct ? 'Success' : 'Failed',
+    product: updatedProduct
+  }
 })
 
 const productService = {
