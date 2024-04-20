@@ -88,12 +88,43 @@ const getProductById = asyncHandler(async(id) => {
   return response
 })
 
+const ratings = asyncHandler(async({ _id, star, comment, pid }) => {
+  // Find product
+  const ratingProduct = await Product.findById(pid)
+  const alreadyRatingProduct = ratingProduct.ratings.find((item) => item.postedBy.toString() === _id)
+
+  if (!!alreadyRatingProduct) {
+    // Update star & comment
+    await Product.updateOne({
+      ratings: { $elemMatch: alreadyRatingProduct }
+    }, {
+      $set: { 'ratings.$.star': star, 'ratings.$.comment': comment }
+    }, {
+      new: true
+    })
+  } else {
+    // Add star & comment
+    await Product.findByIdAndUpdate(pid, {
+      $push: {
+        ratings: {
+          star,
+          comment,
+          postedBy: _id
+        }
+      }
+    }, { new: true })
+  }
+
+  return true
+})
+
 const productService = {
   createProduct,
   deleteProduct,
   updateProduct,
   getProducts,
-  getProductById
+  getProductById,
+  ratings
 }
 
 export default productService
