@@ -56,10 +56,23 @@ const getProductById = asyncHandler(async(req, res) => {
   })
 })
 
+const ratings = asyncHandler(async(req, res) => {
+  const { _id } = req.user
+  const { star, pid } = req.body
+  if (!star || !pid) throw new Error('Missing inputs')
+  const reqData = { _id, ...req.body }
+  await productService.ratings(reqData)
+  return res.status(200).json({
+    success: true,
+    message: 'Success'
+  })
+})
+
 export {
   createProduct,
   deleteProduct,
   updateProduct,
   getProducts,
-  getProductById
+  getProductById,
+  ratings
 }
