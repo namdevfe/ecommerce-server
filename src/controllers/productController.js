@@ -61,11 +61,8 @@ const ratings = asyncHandler(async(req, res) => {
   const { star, pid } = req.body
   if (!star || !pid) throw new Error('Missing inputs')
   const reqData = { _id, ...req.body }
-  await productService.ratings(reqData)
-  return res.status(200).json({
-    success: true,
-    message: 'Success'
-  })
+  const response = await productService.ratings(reqData)
+  return res.status(200).json(response)
 })
 
 export {
