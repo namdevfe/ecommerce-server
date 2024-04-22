@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler'
-import productService from '~/services/productService'
+import productService from '~/services/product'
 
 const createProduct = asyncHandler(async(req, res) => {
   const hasData = Object.keys(req.body).length > 0
@@ -65,11 +65,23 @@ const ratings = asyncHandler(async(req, res) => {
   return res.status(200).json(response)
 })
 
+const uploadImages = asyncHandler(async(req, res) => {
+  const { productId } = req.params
+  if (!req.files) throw new Error('Missing inputs')
+  const data = await productService.uploadImages(productId, req.files)
+  return res.status(200).json({
+    success: data ? true : false,
+    message: data ? 'Upload images is successfully' : 'Cannot upload images',
+    data
+  })
+})
+
 export {
   createProduct,
   deleteProduct,
   updateProduct,
   getProducts,
   getProductById,
-  ratings
+  ratings,
+  uploadImages
 }
