@@ -59,15 +59,6 @@ const getProducts = asyncHandler(async(query) => {
   const skip = (page - 1) * limit
   queryCommand.skip(skip).limit(limit)
 
-  // queryCommand
-  //   .then(async(response) => {
-  //     const count = await Product.find(formatedQueries).countDocuments()
-  //     data = response
-  //   })
-  //   .catch(error => {
-  //     throw new Error(error)
-  //   })
-
   try {
     const response = await queryCommand.exec()
     const count = await Product.find(formatedQueries).countDocuments()
