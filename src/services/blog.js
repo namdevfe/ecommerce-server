@@ -64,6 +64,17 @@ const dislikeBlog = asyncHandler(async(blogId, userId) => {
   }
 })
 
+const uploadImage = asyncHandler(async(blogId, file) => {
+  const imagePath = file?.path
+  const response = await Blog.findByIdAndUpdate(
+    blogId,
+    { image: imagePath },
+    { new: true }
+  )
+
+  return response
+})
+
 const blogService = {
   createBlog,
   getBlogs,
@@ -71,7 +82,8 @@ const blogService = {
   deleteBlogById,
   likeBlog,
   dislikeBlog,
-  getBlogById
+  getBlogById,
+  uploadImage
 }
 
 export default blogService

@@ -84,6 +84,17 @@ const dislikeBlog = asyncHandler(async(req, res) => {
   })
 })
 
+const uploadImage = asyncHandler(async(req, res) => {
+  const { blogId } = req.params
+  if (!req.file) throw new Error('Missing inputs')
+  const data = await blogService.uploadImage(blogId, req.file)
+  return res.status(200).json({
+    success: data ? true : false,
+    message: data ? 'Upload image is successfully' : 'Cannot upload image',
+    data
+  })
+})
+
 export {
   createBlog,
   getBlogs,
@@ -91,5 +102,6 @@ export {
   deleteBlog,
   likeBlog,
   dislikeBlog,
-  getBlogById
+  getBlogById,
+  uploadImage
 }

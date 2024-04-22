@@ -125,13 +125,25 @@ const ratings = asyncHandler(async({ _id, star, comment, pid }) => {
   }
 })
 
+const uploadImages = asyncHandler(async(id, files) => {
+  const response = await Product.findByIdAndUpdate(id, {
+    $push: {
+      images: {
+        $each: files?.map(image => image.path)
+      }
+    }
+  }, { new: true })
+  return response
+})
+
 const productService = {
   createProduct,
   deleteProduct,
   updateProduct,
   getProducts,
   getProductById,
-  ratings
+  ratings,
+  uploadImages
 }
 
 export default productService
