@@ -9,6 +9,7 @@ import {
   refreshToken,
   register,
   resetPassword,
+  updateAddress,
   updateProfile,
   updateUserByAdmin
 } from '~/controllers/userController'
@@ -24,9 +25,10 @@ router.post('/logout', logout)
 router.get('/forgot-password', forgotPassword)
 router.put('/reset-password', resetPassword)
 router.get('/profile', verifyAccessToken, getProfile)
-router.get('/', [verifyAccessToken, isAdmin], getUsers)
-router.delete('/', [verifyAccessToken, isAdmin], deleteUserByAdmin)
-router.put('/:uid', [verifyAccessToken, isAdmin], updateUserByAdmin)
 router.put('/profile', verifyAccessToken, updateProfile)
+router.put('/address', verifyAccessToken, updateAddress)
+router.put('/:uid', [verifyAccessToken, isAdmin], updateUserByAdmin)
+router.delete('/', [verifyAccessToken, isAdmin], deleteUserByAdmin)
+router.get('/', [verifyAccessToken, isAdmin], getUsers)
 
 export default router

@@ -164,6 +164,11 @@ const updateUser = asyncHandler(async (_id, data) => {
   return response
 })
 
+const updateAddress = asyncHandler(async(_id, address) => {
+  const response = await User.findByIdAndUpdate(_id, { $push: { address } }, { new: true })
+  return response
+})
+
 const userService = {
   register,
   login,
@@ -175,7 +180,8 @@ const userService = {
   resetPassword,
   getAllUsers,
   deleteUser,
-  updateUser
+  updateUser,
+  updateAddress
 }
 
 export default userService
