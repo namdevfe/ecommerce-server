@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler'
-import userService from '~/services/userService'
+import userService from '~/services/user'
 import jwt from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { generateAccessToken } from '~/middlewares/jwtMiddleware'
@@ -150,6 +150,18 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
   })
 })
 
+const updateAddress = asyncHandler(async(req, res) => {
+  console.log('🚀req.user---->', req.user);
+  const { _id } = req.user
+  if (!req.body.address) throw new Error('Missing inputs')
+  const data = await userService.updateAddress(_id, req.body.address)
+  return res.status(200).json({
+    success: data ? true : false,
+    message: data ? `Updated address with id=${_id} successfully` : 'Cannot update address',
+    data
+  })
+})
+
 export {
   register,
   login,
@@ -161,5 +173,6 @@ export {
   getUsers,
   deleteUserByAdmin,
   updateProfile,
-  updateUserByAdmin
+  updateUserByAdmin,
+  updateAddress
 }

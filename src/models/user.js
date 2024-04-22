@@ -33,7 +33,10 @@ const userSchema = mongoose.Schema({
     type: Array,
     default: []
   },
-  address: [{ type: mongoose.Types.ObjectId, ref: 'Address' }],
+  address: {
+    type: Array,
+    default: []
+  },
   wishList: [{ type: mongoose.Types.ObjectId, ref: 'Product' }],
   isBlocked: {
     type: Boolean,
