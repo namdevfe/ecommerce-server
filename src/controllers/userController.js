@@ -151,7 +151,6 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 })
 
 const updateAddress = asyncHandler(async(req, res) => {
-  console.log('🚀req.user---->', req.user);
   const { _id } = req.user
   if (!req.body.address) throw new Error('Missing inputs')
   const data = await userService.updateAddress(_id, req.body.address)
@@ -159,6 +158,18 @@ const updateAddress = asyncHandler(async(req, res) => {
     success: data ? true : false,
     message: data ? `Updated address with id=${_id} successfully` : 'Cannot update address',
     data
+  })
+})
+
+const addToCart = asyncHandler(async(req, res) => {
+  const { _id } = req.user
+  const { productId, color, quantity } = req.body
+  if (!productId || !color || !quantity) throw new Error('Missing inputs')
+  const response = await userService.addToCart(_id, req.body)
+  return res.status(200).json({
+    success: response ? true : false,
+    message: response ? 'Add new product to cart is successfully' : 'Cannot add to cart',
+    cart: response
   })
 })
 
@@ -174,5 +185,6 @@ export {
   deleteUserByAdmin,
   updateProfile,
   updateUserByAdmin,
-  updateAddress
+  updateAddress,
+  addToCart
 }

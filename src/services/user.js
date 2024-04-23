@@ -46,9 +46,9 @@ const login = ({ email, password }) => new Promise(async (resolve, reject) => {
       resolve({
         success: true,
         message: 'Login is successfully',
-        accessToken,
-        refreshToken,
-        data: userData
+        accessToken
+        // refreshToken,
+        // data: userData
       })
     } else {
       throw new Error('Invalid credentials')
@@ -169,6 +169,34 @@ const updateAddress = asyncHandler(async(_id, address) => {
   return response
 })
 
+const addToCart = asyncHandler(async(userId, data) => {
+  const userInfo = await User.findById(userId)
+  const { productId, quantity, color } = data
+  const alreadyProduct = userInfo?.cart?.find(item => item.product.toString() === productId && item.color === color)
+
+  if (alreadyProduct) {
+    // Case: Duplicate color
+    const cartRes = await User.updateOne(
+      { cart: { $elemMatch: alreadyProduct } },
+      { $set: { 'cart.$.quantity': quantity } },
+      { new: true })
+    return cartRes
+  } else {
+    // Case: Add new product to cart
+    const cartRes = await User.findByIdAndUpdate(userId, {
+      $push: {
+        cart: {
+          product: productId,
+          color,
+          quantity
+        }
+      }
+    }, { new: true })
+
+    return cartRes
+  }
+})
+
 const userService = {
   register,
   login,
@@ -181,7 +209,8 @@ const userService = {
   getAllUsers,
   deleteUser,
   updateUser,
-  updateAddress
+  updateAddress,
+  addToCart
 }
 
 export default userService

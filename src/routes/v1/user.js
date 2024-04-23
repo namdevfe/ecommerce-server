@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+  addToCart,
   deleteUserByAdmin,
   forgotPassword,
   getProfile,
@@ -27,6 +28,7 @@ router.put('/reset-password', resetPassword)
 router.get('/profile', verifyAccessToken, getProfile)
 router.put('/profile', verifyAccessToken, updateProfile)
 router.put('/address', verifyAccessToken, updateAddress)
+router.put('/cart', verifyAccessToken, addToCart)
 router.put('/:uid', [verifyAccessToken, isAdmin], updateUserByAdmin)
 router.delete('/', [verifyAccessToken, isAdmin], deleteUserByAdmin)
 router.get('/', [verifyAccessToken, isAdmin], getUsers)
